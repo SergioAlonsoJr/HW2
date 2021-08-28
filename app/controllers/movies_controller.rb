@@ -1,7 +1,12 @@
 class MoviesController < ApplicationController
 
   def index
-    @movies = Movie.all
+    if params[:sort_by]
+      @movies = Movie.order(params[:sort_by])
+    else
+
+      @movies = Movie.all
+    end
   end
 
   def show
@@ -25,9 +30,9 @@ class MoviesController < ApplicationController
 
   def update
     @movie = Movie.find params[:id]
-    @movie.update (movie_params)
+    @movie.update(movie_params)
     flash[:notice] = "#{@movie.title} was successfully updated."
-    redirect_to movies_path (@movie)
+    redirect_to movies_path(@movie)
   end
 
   def destroy
