@@ -19,11 +19,16 @@ class MoviesController < ApplicationController
       session[:sort_by] = params[:sort_by]
     end
     if session[:sort_by]
+      case session[:sort_by]
+      when 'title'
+        @title_header_class = 'hilite'
+      when
+        @release_date_header_class = 'hilite'
+      end
       @movies = Movie.where(rating: active_ratings).order(session[:sort_by])
     else
       @movies = Movie.where(rating: active_ratings)
     end
-    @hilite = 'hilite'
   end
 
   def show
