@@ -1,13 +1,29 @@
 class MoviesController < ApplicationController
 
   def index
-    if params[:sort_by]
-      @movies = Movie.order(params[:sort_by])
-    else
 
-      @movies = Movie.all
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
     end
-      @hilite = 'hilite'
+
+    if session[:ratings]
+      active_ratings = session[:ratings].keys
+    else
+      active_ratings = Movie.all_ratings
+    end
+
+    @all_ratings = Movie.all_ratings
+
+    @active_ratings = active_ratings
+    if params[:sort_by]
+      session[:sort_by] = params[:sort_by]
+    end
+    if session[:sort_by]
+      @movies = Movie.where(rating: active_ratings).order(session[:sort_by])
+    else
+      @movies = Movie.where(rating: active_ratings)
+    end
+    @hilite = 'hilite'
   end
 
   def show
@@ -20,9 +36,13 @@ class MoviesController < ApplicationController
   end
 
   def create
-    @movie = Movie.create!(movie_params)
-    flash[:notice] = "#{@movie.title} was successfully created."
-    redirect_to movies_path
+    @movie = Movie.new(movie_params)
+    if @movie.save
+      flash[:notice] = "#{@movie.title} was successfully created."
+      redirect_to movies_path
+    else
+      render 'new'
+    end
   end
 
   def edit
@@ -31,9 +51,12 @@ class MoviesController < ApplicationController
 
   def update
     @movie = Movie.find params[:id]
-    @movie.update(movie_params)
-    flash[:notice] = "#{@movie.title} was successfully updated."
-    redirect_to movies_path(@movie)
+    if @movie.update(movie_params)
+      flash[:notice] = "#{@movie.title} was successfully updated."
+      redirect_to movies_path(@movie)
+    else
+      render 'edit'
+    end
   end
 
   def destroy

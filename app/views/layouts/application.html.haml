@@ -3,7 +3,7 @@
   %head
     %title RottenPotatoes!
     = stylesheet_link_tag 'application'
-    //= javascript_include_tag 'application'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
     = csrf_meta_tags
 
   %body
